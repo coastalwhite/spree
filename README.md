@@ -1,5 +1,9 @@
 # Spree
 
+<p align="center">
+    <img src="./assets/screenshot.png" height="200px" alt="Screenshot of Spree" />
+</p>
+
 A simple power menu written in Rust. I wrote this because I wanted to experiment
 with [Slint](https://slint.dev/) and was missing a nice and simple power menu.
 This is alpha software at best. I currently have no plans to support or update
