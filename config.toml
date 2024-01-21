@@ -1,0 +1,44 @@
+# Color strings can either be:
+# - a map with `red`, `green` and `blue` u8s (optional `alpha` u8)
+#   e.g. { red = 15, blue 32, green = 56, alpha = 255 }
+# - a hex string with 3 or 6 hexadecimal digits
+#   e.g. #000 or #263238
+
+# The primary and secondary color used
+# This is also used in the SVG icons
+primary = "#263238"
+secondary = "#cdd3de"
+
+# Width of the border around the window (in px)
+border_width = 2
+# Color of the border around the window
+border_color = "#000"
+
+# Padding around the buttons (in px)
+padding = 8
+# Spacing between the buttons (in px)
+spacing = 8
+
+# Width and height of each button (in px)
+button_dim = 92
+
+# Use `Tab` and `Shift+Tab` keys to switch through options
+enable_tab_navigation = true
+# Use `h` and `l` keys to switch through options
+enable_vim_navigation = true
+# Use left and right arrow keys to switch through options
+enable_arrow_navigation = true
+
+# `icon`: either a path to a SVG file or one of the 4 builtin names
+#    - builtins: `poweroff`, `reboot`, `lock`, `logout`
+#    - The SVG file has the strings "%primaryColor%" and "%secondaryColor%"
+#      (without the quotes) replaced with the primary and secondary color.
+# `command`: the argv for the command being run
+# `key`: one character without modifiers
+
+buttons = [
+     { icon = "poweroff", command = ["systemctl", "poweroff"], key = "p" },
+     { icon = "reboot", command = ["systemctl", "reboot"], key = "r" },
+     { icon = "lock", command = ["killall", "-USR1", "swayidle"], key = "d" },
+     { icon = "logout", command = ["sway", "exit"], key = "o" },
+]

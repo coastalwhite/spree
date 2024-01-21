@@ -1,0 +1,136 @@
+struct ButtonData {
+    focussed_icon: image,
+    unfocussed_icon: image,
+}
+
+component ButtonTile inherits Rectangle {
+    callback clicked;
+    in property <image> focussed_icon;
+    in property <image> unfocussed_icon;
+
+	in property <color> primary_color;
+	in property <color> secondary_color;
+
+	in property <bool> is_selected;
+
+    property <bool> is_focussed: ta.has-hover || root.is_selected;
+
+    background: (is_focussed ? secondary_color : primary_color);
+
+	Image {
+        source: (is_focussed ? focussed_icon : unfocussed_icon);
+        width: parent.width;
+        height: parent.height;
+    }
+
+    ta := TouchArea {
+        clicked => {
+            root.clicked();
+        }
+    }
+}
+
+export component MainWindow inherits Window {
+    callback btn_clicked(int);
+    callback btn_confirm(int);
+    callback exit();
+	callback key_pressed(int, KeyEvent) -> int;
+
+	property<int> selected: -1;
+	
+	public function allow_keypresses() {
+		focus_scope.focus();
+	}
+
+    in property <[ButtonData]> btns;
+
+    in property <color> primary_color;
+	in property <color> secondary_color;
+
+    in property <float> dim_padding;
+    in property <float> dim_spacing;
+    in property <float> border_width;
+    in property <color> border_color;
+    in property <float> button_dim;
+
+	background: primary_color;
+
+    width:
+        border_width * 2px +
+        dim_padding      * 2px +
+        dim_spacing * 1px * (btns.length - 1) +
+        btns.length * 1px * button_dim;
+    height:
+        border_width * 2px +
+        dim_padding      * 2px +
+        button_dim * 1px;
+
+	title: "Power Menu";
+	no-frame: true;
+	always-on-top: true;
+
+    Rectangle {
+        width: parent.width;
+        height: parent.height;
+        
+        border-width: 1px * root.border_width;
+        border-color: root.border_color;
+    }
+
+    for btn[i] in btns : ButtonTile {
+        x: 1px * root.border_width + 1px * root.dim_padding + i * (1px * root.button_dim + 1px * root.dim_spacing);
+        y: 1px * root.border_width + 1px * root.dim_padding;
+
+        width: 1px * root.button_dim;
+        height: 1px * root.button_dim;
+
+        focussed_icon: btn.focussed_icon;
+        unfocussed_icon: btn.unfocussed_icon;
+
+        primary_color: primary_color;
+        secondary_color: secondary_color;
+
+        is_selected: root.selected == i;
+
+        clicked => {
+            root.btn_clicked(i);
+        }
+    }
+
+	focus_scope := FocusScope {
+		key-released(event) => {
+            if (event.text == Key.Escape) {
+                if (
+                    event.modifiers.control ||
+                    event.modifiers.alt ||
+                    event.modifiers.meta ||
+                    event.modifiers.shift
+                ) {
+                    return accept;
+                }
+
+                if (root.selected >= 0) {
+                    root.selected = -1;
+                    return accept;
+                }
+
+                root.exit();
+                return accept;
+            }
+
+
+            if (event.text == Key.Return) {
+                if (root.selected == -1) {
+                    return accept;
+                }
+
+                root.btn_clicked(root.selected);
+				root.selected = -1;
+                return accept;
+            }
+
+			root.selected = key_pressed(root.selected, event);
+			return accept;
+		}
+	}
+}
